@@ -9,6 +9,8 @@ format-fix:
 	@dart format --line-length=120 .
 
 format-check:
+	@dart format --line-length=120 .
+	git diff
 	@dart format --line-length=120 --set-exit-if-changed .
 
 lint: prepare
