@@ -25,3 +25,6 @@ test/.test_coverage.dart
 
 # VSCode
 .vscode/
+
+# Other
+.DS_Store

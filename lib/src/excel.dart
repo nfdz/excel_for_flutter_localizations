@@ -64,7 +64,7 @@ ExcelFile? readExcelFile(String excelFilePath) {
   return ExcelFile(translations: translations, fuzzy: fuzzy);
 }
 
-// TODO check if quote and dequote are needed
+// TODO(nfdz): check if quote and dequote are needed
 // String _dequote(String text) => text.replaceAll(r'\n', '\n');
 // String? _quote(String? text) => text?.replaceAll('\n', r'\n');
 String _dequote(String text) => text;

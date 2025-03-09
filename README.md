@@ -24,17 +24,22 @@ The idea is to **keep it simple** until you perhaps need to use a more professio
 
 ### Breakdown of the Rules
 
-- The source of truth is the ARB file declared as template (`template-arb-file`). This file will never be modified by this tool.
-- When a translation entry is in Excel and in the ARB file of its language, the one in Excel will be used.
-- When a translation entry is not present in the ARB template file, it will be deleted from Excel and all other ARBs.
-- When a translation entry is not present in Excel but is present in the translated ARBs, the present translations will be used for the ARBs and for the Excel.
-- When a translation entry has changed its text in the reference language (`template-arb-file`), this translation will be updated in Excel. Be careful because the rest of the languages ​​will continue to use the value they have in Excel. To update the translations, the idea is to go through Excel.
+- The source of truth is the ARB file declared as template (`template-arb-file`) => **This file will never be modified by this tool**
+- When a translation entry is in Excel and in the ARB file of its language => **The one in Excel will be used**
+- When a translation entry is not present in the ARB template file => **It will be deleted from Excel and all other ARBs**
+- When a translation entry is not present in Excel but is present in the translated ARBs => **The present translations will be used for the ARBs and for the Excel**
+- When a translation entry has changed its text in the reference language (`template-arb-file`) => **This translation will be updated in Excel**
+  - Be careful because the rest of the languages ​​will continue to use the value they have in Excel. To update the translations, the idea is to go through the Excel.
 
 #### New and Fuzzy Translations
 
 The first column of the Excel will have an `X` when:
 - The translation entry is new.
 - The translation entry has changed in the reference language (`template-arb-file`).
+
+#### Disabled Columns
+
+There is a greyish background colour in the cells that should not be modified under any circumstances in the Excel file. The reason is that they will not produce any change in the ARBs and may be misleading. They are: `context`, `key`, `reference translation`.
 
 ## Install
 
@@ -62,5 +67,5 @@ dart pub global run excel_for_flutter_localizations [ARGS]
 Using the same naming conventions as Flutter documentation.
 
 ```bash
-dart pub global run -a lib/l10n -e translations.xlsx -t app_en.arb
+dart pub global run excel_for_flutter_localizations -a lib/l10n -e translations.xlsx -t app_en.arb
 ```
