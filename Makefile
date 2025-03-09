@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := publish-test
 .PHONY: doc lint build test
+.SHELL=/bin/bash
 
 prepare:
 	@dart pub get
