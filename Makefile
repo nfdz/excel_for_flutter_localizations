@@ -5,10 +5,10 @@
 prepare:
 	@dart pub get
 
-format-fix:
+format-fix: prepare
 	@dart format .
 
-format-check:
+format-check: prepare
 	@dart format --set-exit-if-changed .
 
 lint: prepare
