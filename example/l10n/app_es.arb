@@ -1,0 +1,6 @@
+{
+  "@@locale": "es",
+  "finalTest": "My test \n with multiple lines \n this is not a problemMy test \n with multiple lines \n this is not a problemMy test \n with multiple lines \n this is not a problemMy test \n with multiple lines \n this is not a problemMy test \n with multiple lines \n this is not a problemMy test \n with multiple\n\n\n\n lines \n this is not a \n\n\n\n\nproblemMy test \n with multiple lines \n\n\n\n this is not a problemMy test \n with multiple lines \n this is not a problem 22222",
+  "hello": "hola",
+  "testHello": "Hola {name}"
+}

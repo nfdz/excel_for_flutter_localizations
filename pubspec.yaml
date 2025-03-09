@@ -1,0 +1,20 @@
+name: excel_for_flutter_localizations
+description: Use Excel as a localization platform alongside the standard Flutter library.
+version: 1.0.0-dev
+repository: https://github.com/nfdz/excel_for_flutter_localizations
+issue_tracker: https://github.com/nfdz/excel_for_flutter_localizations/issues
+homepage: https://github.com/nfdz/excel_for_flutter_localizations
+documentation: https://github.com/nfdz/excel_for_flutter_localizations
+topics: [excel, localizations, internationalization, flutter_localizations, intl]
+
+environment:
+  sdk: ">=3.6.2 <4.0.0"
+
+dependencies:
+  args: ^2.6.0
+  excel: ^4.0.6
+  path: ^1.9.1
+
+dev_dependencies:
+  lints: ^5.1.1
+  test: ^1.25.15
