@@ -9,7 +9,7 @@ format-fix:
 	@dart format .
 
 format-check:
-	@dart format --show=changed --set-exit-if-changed .
+	@dart format --set-exit-if-changed .
 
 lint: prepare
 	@dart analyze
