@@ -6,12 +6,10 @@ prepare:
 	@dart pub get
 
 format-fix:
-	@dart format --line-length=120 .
+	@dart format .
 
 format-check:
-	@dart format --line-length=120 .
-	git diff
-	@dart format --line-length=120 --set-exit-if-changed .
+	@dart format --show=changed --set-exit-if-changed .
 
 lint: prepare
 	@dart analyze
