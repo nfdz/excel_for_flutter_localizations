@@ -24,11 +24,11 @@ The idea is to **keep it simple** until you perhaps need to use a more professio
 
 ### Breakdown of the Rules
 
-- The source of truth is the ARB file declared as template (`template-arb-file`) => **This file will never be modified by this tool**
-- When a translation entry is in Excel and in the ARB file of its language => **The one in Excel will be used**
-- When a translation entry is not present in the ARB template file => **It will be deleted from Excel and all other ARBs**
-- When a translation entry is not present in Excel but is present in the translated ARBs => **The present translations will be used for the ARBs and for the Excel**
-- When a translation entry has changed its text in the reference language (`template-arb-file`) => **This translation will be updated in Excel**
+- The source of truth is the ARB file declared as template (`template-arb-file`) → *This file will never be modified by this tool*
+- When a translation entry is in the Excel and in the ARB file of its language → *The one in Excel will be used*
+- When a translation entry is not present in the ARB template file → *It will be deleted from Excel and all other ARBs*
+- When a translation entry is not present in Excel but is present in the translated ARBs → *The present translations will be used for the ARBs and for the Excel*
+- When a translation entry has changed its text in the reference language (`template-arb-file`) → *This translation will be updated in the Excel*
   - Be careful because the rest of the languages ​​will continue to use the value they have in Excel. To update the translations, the idea is to go through the Excel.
 
 #### New and Fuzzy Translations
