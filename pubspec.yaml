@@ -5,7 +5,7 @@ repository: https://github.com/nfdz/excel_for_flutter_localizations
 issue_tracker: https://github.com/nfdz/excel_for_flutter_localizations/issues
 homepage: https://github.com/nfdz/excel_for_flutter_localizations
 documentation: https://github.com/nfdz/excel_for_flutter_localizations
-topics: [excel, localizations, internationalization, flutter_localizations, intl]
+topics: [excel, localizations, internationalization, arb, intl, translations]
 
 environment:
   sdk: ">=3.6.2 <4.0.0"
