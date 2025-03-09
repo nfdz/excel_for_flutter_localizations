@@ -10,6 +10,7 @@ format-fix:
 
 format-check:
 	@dart format --line-length=120 --set-exit-if-changed .
+	git diff --color-words
 
 lint: prepare
 	@dart analyze
