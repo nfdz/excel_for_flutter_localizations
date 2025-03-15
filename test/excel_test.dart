@@ -23,7 +23,8 @@ void main() {
 
       final excel = readExcelFile(excelFile.path);
 
-      // expect(, "en");
+      expect(excel!.fuzzy.length, 0);
+      expect(excel.translations.length, 2);
     });
   });
 }
