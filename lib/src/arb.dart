@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:excel_for_flutter_localizations/src/json.dart';
@@ -13,7 +12,8 @@ const arbLocaleKey = "@@locale";
 /// Reads the locale from an ARB file.
 String? readArbFileLocale(File arbFile) {
   final fileContentString = arbFile.readAsStringSync();
-  final fileContentJson = jsonDecode(fileContentString);
+
+  final fileContentJson = tryJsonDecode(fileContentString);
   if (fileContentJson is Map<String, dynamic>) {
     return fileContentJson[arbLocaleKey]?.toString();
   } else {
@@ -29,7 +29,7 @@ ArbDir readArbDir(String arbDirPath) {
   final arbs = <String, ArbFile>{};
   for (final arbFile in arbFiles) {
     logVerbose("Processing ${basename(arbFile.path)}");
-    final arb = readArbFile(arbFile);
+    final arb = _readArbFile(arbFile);
     if (arb != null) {
       arbs[arb.locale] = arb;
     }
@@ -38,9 +38,9 @@ ArbDir readArbDir(String arbDirPath) {
 }
 
 /// Reads an ARB file.
-ArbFile? readArbFile(File file) {
+ArbFile? _readArbFile(File file) {
   final fileContentString = file.readAsStringSync();
-  final fileContentJson = jsonDecode(fileContentString);
+  final fileContentJson = tryJsonDecode(fileContentString);
   final items = <String, String>{};
   final tags = <String, String>{};
   String? locale;
@@ -63,18 +63,6 @@ ArbFile? readArbFile(File file) {
         if (tag is String) {
           tags[e.key] = tag;
         }
-        // final placeholders = meta['placeholders'];
-        // if (placeholders is Map) {
-        //   for (final placeholder in placeholders.entries) {
-        //     var value = placeholder.value;
-        //     if (value is Map) {
-        //       var d = value["description"];
-        //       if (d is String) {
-        //         item.placeHolderDescriptions[placeholder.key.toString()] = d;
-        //       }
-        //     }
-        //   }
-        // }
       }
     }
 
