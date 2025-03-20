@@ -5,7 +5,7 @@ import 'dart:io';
 
 void main(List<String> args) async {
   // it could come with the prefix 'refs/tags/'
-  final releaseVersion = args[0].replaceAll("refs/tags/", "").trim();
+  final releaseVersion = args[0].replaceAll("refs/tags/v", "").trim();
   stdout.writeln('Release version: $releaseVersion');
 
   final pkgVersion = await _getPackageVersion();
