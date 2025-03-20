@@ -4,7 +4,7 @@ import 'package:excel_for_flutter_localizations/src/model/excel.dart';
 
 var _rnd = 0;
 
-final testExcelFile = '${Directory.current.path}${Platform.pathSeparator}test${Platform.pathSeparator}excel_mock.xlsx';
+final testExcelFile = '${Directory.current.path}${Platform.pathSeparator}test${Platform.pathSeparator}.excel_mock.xlsx';
 
 extension DirectoryX on Directory {
   File createExcelFile() {

@@ -69,3 +69,14 @@ Using the same naming conventions as Flutter documentation.
 ```bash
 dart pub global run excel_for_flutter_localizations -a lib/l10n -e translations.xlsx -t app_en.arb
 ```
+
+## Example
+
+```bash
+cd example
+dart ../bin/excel_for_flutter_localizations.dart -a l10n -e example.xlsx -t app_en.arb --verbose
+```
+
+### Screenshot
+
+![Example Excel](https://github.com/user-attachments/assets/e6a70c6f-8902-4b18-8af8-64d7f32cf154)
