@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:excel_for_flutter_localizations/excel_for_flutter_localizations.dart';
 import 'package:excel_for_flutter_localizations/src/logger.dart';
+import 'package:excel_for_flutter_localizations/src/model/excel.dart';
 import 'package:test/test.dart';
 
 import 'arb_mock.dart';
+import 'excel_mock.dart';
 
 void main() {
   late final tempDir = Directory.systemTemp.createTempSync();
@@ -51,7 +53,7 @@ void main() {
 
       final arbDir = readArbDir(testArbDir.path);
 
-      expect(arbDir.dirPath, testArbDir.path);
+      expect(arbDir!.dirPath, testArbDir.path);
       expect(arbDir.filePaths.length, 2);
       expect(arbDir.filePaths.contains(arbEnFile.path), true);
       expect(arbDir.filePaths.contains(arbEsFile.path), true);
@@ -82,10 +84,16 @@ void main() {
 
       final arbDir = readArbDir(testArbDir.path);
 
-      expect(arbDir.dirPath, testArbDir.path);
+      expect(arbDir!.dirPath, testArbDir.path);
       expect(arbDir.filePaths.length, 1);
       expect(arbDir.filePaths.first, arbFile.path);
       expect(arbDir.arbs.length, 0);
+    });
+
+    test('when file does not exist', () {
+      final arbDir = readArbDir("${tempDir.path}${Platform.pathSeparator}thisdoesnotexists");
+
+      expect(arbDir, null);
     });
 
     test('when file does not have locale', () {
@@ -94,7 +102,7 @@ void main() {
 
       final arbDir = readArbDir(testArbDir.path);
 
-      expect(arbDir.dirPath, testArbDir.path);
+      expect(arbDir!.dirPath, testArbDir.path);
       expect(arbDir.filePaths.length, 1);
       expect(arbDir.filePaths.first, arbFile.path);
       expect(arbDir.arbs.length, 0);
@@ -106,10 +114,83 @@ void main() {
 
       final arbDir = readArbDir(testArbDir.path);
 
-      expect(arbDir.dirPath, testArbDir.path);
+      expect(arbDir!.dirPath, testArbDir.path);
       expect(arbDir.filePaths.length, 1);
       expect(arbDir.filePaths.first, arbFile.path);
       expect(arbDir.arbs.length, 0);
+    });
+  });
+
+  group("writeArbDir", () {
+    test('when no ExcelFile', () {
+      final testArbDir = tempDir.createArbDir();
+      const initialContentEn = "initial-content-en";
+      const initialContentEs = "initial-content-es";
+      final enArbFile = File('${testArbDir.path}${Platform.pathSeparator}test_en.arb')
+        ..writeAsStringSync(initialContentEn);
+      final esArbFile = File('${testArbDir.path}${Platform.pathSeparator}test_es.arb')
+        ..writeAsStringSync(initialContentEs);
+      final arbDir = mockArbDir(dirPath: testArbDir.path, filePaths: [enArbFile.path, esArbFile.path]);
+
+      writeArbDir(
+        arbDir: arbDir,
+        excel: null,
+        arbTemplateLocale: 'en',
+        arbTemplateFileName: 'test_en.arb',
+      );
+
+      expect(testArbDir.existsSync(), true);
+      expect(enArbFile.existsSync(), true);
+      expect(esArbFile.existsSync(), true);
+      expect(enArbFile.readAsStringSync(), initialContentEn);
+      expect(esArbFile.readAsStringSync(), initialContentEs);
+    });
+    test('when ExcelFile is empty', () {
+      final testArbDir = tempDir.createArbDir();
+      const initialContentEn = "initial-content-en";
+      const initialContentEs = "initial-content-es";
+      final enArbFile = File('${testArbDir.path}${Platform.pathSeparator}test_en.arb')
+        ..writeAsStringSync(initialContentEn);
+      final esArbFile = File('${testArbDir.path}${Platform.pathSeparator}test_es.arb')
+        ..writeAsStringSync(initialContentEs);
+      final arbDir = mockArbDir(dirPath: testArbDir.path, filePaths: [enArbFile.path, esArbFile.path]);
+      const excel = ExcelFile(fuzzy: {}, translations: {});
+
+      writeArbDir(
+        arbDir: arbDir,
+        excel: excel,
+        arbTemplateLocale: 'en',
+        arbTemplateFileName: 'test_en.arb',
+      );
+
+      expect(testArbDir.existsSync(), true);
+      expect(enArbFile.existsSync(), true);
+      expect(esArbFile.existsSync(), false);
+      expect(enArbFile.readAsStringSync(), initialContentEn);
+    });
+    test('when ExcelFile is valid', () {
+      final testArbDir = tempDir.createArbDir();
+      const initialContentEn = "initial-content-en";
+      const initialContentEs = "initial-content-es";
+      final enArbFile = File('${testArbDir.path}${Platform.pathSeparator}test_en.arb')
+        ..writeAsStringSync(initialContentEn);
+      final esArbFile = File('${testArbDir.path}${Platform.pathSeparator}test_es.arb')
+        ..writeAsStringSync(initialContentEs);
+      final arbDir = mockArbDir(dirPath: testArbDir.path, filePaths: [enArbFile.path, esArbFile.path]);
+      final excel = mockExcelFile();
+
+      writeArbDir(
+        arbDir: arbDir,
+        excel: excel,
+        arbTemplateLocale: 'en',
+        arbTemplateFileName: 'test_en.arb',
+      );
+
+      expect(testArbDir.existsSync(), true);
+      expect(enArbFile.existsSync(), true);
+      expect(esArbFile.existsSync(), true);
+      expect(enArbFile.readAsStringSync(), initialContentEn);
+      expect(esArbFile.readAsStringSync(), arbEs);
     });
   });
 }

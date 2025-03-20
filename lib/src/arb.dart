@@ -23,8 +23,14 @@ String? readArbFileLocale(File arbFile) {
 }
 
 /// Reads the ARB files from a directory.
-ArbDir readArbDir(String arbDirPath) {
-  final arbFiles = Directory(arbDirPath).listSync().whereType<File>().where((f) => extension(f.path) == '.arb');
+ArbDir? readArbDir(String arbDirPath) {
+  final arbDir = Directory(arbDirPath);
+  if (!arbDir.existsSync()) {
+    logVerbose("ARB directory not found: $arbDirPath");
+    return null;
+  }
+
+  final arbFiles = arbDir.listSync().whereType<File>().where((f) => extension(f.path) == '.arb');
   logVerbose("ARB files: ${arbFiles.map((f) => basename(f.path)).join(', ')}");
   final arbs = <String, ArbFile>{};
   for (final arbFile in arbFiles) {
@@ -83,7 +89,7 @@ void writeArbDir({
   required ArbDir arbDir,
   required ExcelFile? excel,
   required String arbTemplateLocale,
-  required String arbTemplateFile,
+  required String arbTemplateFileName,
 }) {
   if (excel == null) {
     logVerbose("No excel file to process, keep ARB directory as it is");
@@ -94,7 +100,7 @@ void writeArbDir({
   // Delete all ARB files except the template file.
   for (final filePath in arbDir.filePaths) {
     final fileName = basename(filePath);
-    if (fileName != arbTemplateFile) {
+    if (fileName != arbTemplateFileName) {
       File(filePath).deleteSync();
     }
   }
@@ -104,9 +110,9 @@ void writeArbDir({
     if (translation.key == arbTemplateLocale) {
       continue;
     }
-    writeArbFile(
+    _writeArbFile(
       arbDirPath: arbDir.dirPath,
-      arbTemplateFile: arbTemplateFile,
+      arbTemplateFileName: arbTemplateFileName,
       arbTemplate: arbTemplate,
       translation: translation,
       oldArb: arbDir.arbs[translation.key],
@@ -115,14 +121,14 @@ void writeArbDir({
 }
 
 /// Writes an ARB file.
-void writeArbFile({
+void _writeArbFile({
   required MapEntry<String, ExcelTranslations> translation,
-  required String arbTemplateFile,
+  required String arbTemplateFileName,
   required String arbDirPath,
   required ArbFile arbTemplate,
   required ArbFile? oldArb,
 }) {
-  final arbFile = arbTemplateFile.replaceFirst(arbTemplate.locale, translation.value.locale);
+  final arbFile = arbTemplateFileName.replaceFirst(arbTemplate.locale, translation.value.locale);
   logVerbose("Updating $arbFile...");
   final tempArbFile = File("$arbDirPath${Platform.pathSeparator}$arbFile")..createSync();
   final arbContent = <String, String>{};

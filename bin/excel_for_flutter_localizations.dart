@@ -5,7 +5,7 @@ import 'package:excel_for_flutter_localizations/excel_for_flutter_localizations.
 import 'package:excel_for_flutter_localizations/src/logger.dart';
 
 const _pkgName = "excel_for_flutter_localizations";
-const _pkgVersion = "1.0.0-dev";
+const _pkgVersion = "1.0.0-dev2";
 const _argArbDir = "arb-dir";
 const _argExcelFile = "excel-file";
 const _argTemplateArbFile = "template-arb-file";
@@ -24,25 +24,25 @@ void main(List<String> args) {
   final verbose = argResults.flag(_argVerbose);
   configLogger(verbose: verbose);
 
-  final arbTemplateFile = argResults.option(_argTemplateArbFile);
+  final arbTemplateFileName = argResults.option(_argTemplateArbFile);
   final arbDirPath = argResults.option(_argArbDir);
   final excelFilePath = argResults.option(_argExcelFile);
 
   // Validate the arguments
-  if (arbTemplateFile == null || arbDirPath == null || excelFilePath == null) {
+  if (arbTemplateFileName == null || arbDirPath == null || excelFilePath == null) {
     logError("Missing required arguments");
     _exitErrorArgs(parser);
   }
 
-  final arbTemplateFilePath = "$arbDirPath${Platform.pathSeparator}$arbTemplateFile";
-  final arbFile = File(arbTemplateFilePath);
-  if (!arbFile.existsSync()) {
+  final arbTemplateFilePath = "$arbDirPath${Platform.pathSeparator}$arbTemplateFileName";
+  final arbTemplateFile = File(arbTemplateFilePath);
+  if (!arbTemplateFile.existsSync()) {
     logError("ARB template file not found: $arbTemplateFilePath");
     exit(1);
   }
 
   // Process ARBs
-  final arbTemplateLocale = readArbFileLocale(arbFile);
+  final arbTemplateLocale = readArbFileLocale(arbTemplateFile);
   if (arbTemplateLocale == null) {
     logError("ARB template file not valid: no '$arbLocaleKey' found in $arbTemplateFilePath");
     exit(1);
@@ -52,6 +52,10 @@ void main(List<String> args) {
     exit(1);
   }
   final arbDir = readArbDir(arbDirPath);
+  if (arbDir == null) {
+    logError("ARB directory '$arbDirPath' is not valid");
+    exit(1);
+  }
 
   // Process Excel
   final excel = readExcelFile(excelFilePath);
@@ -61,11 +65,11 @@ void main(List<String> args) {
     arbDir: arbDir,
     excel: excel,
     arbTemplateLocale: arbTemplateLocale,
-    arbTemplateFile: arbTemplateFile,
+    arbTemplateFileName: arbTemplateFileName,
   );
 
   // Update Excel
-  writeExcel(excelFile: excel, arbTemplateLocale: arbTemplateLocale, arbDir: arbDir, excelFilePath: excelFilePath);
+  writeExcel(excelFile: excel, arbTemplateLocale: arbTemplateLocale, arbs: arbDir.arbs, excelFilePath: excelFilePath);
 
   exit(0);
 }

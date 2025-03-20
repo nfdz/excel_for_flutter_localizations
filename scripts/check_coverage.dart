@@ -2,8 +2,7 @@
 
 import 'dart:io';
 
-// TODO(nfdz): Change this value to the minimum coverage required.
-const minCoverage = 1;
+const minCoverage = 95;
 
 void main(List<String> args) async {
   final lcovFilePath = args[0];

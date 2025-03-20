@@ -25,40 +25,50 @@ ExcelFile? readExcelFile(String excelFilePath) {
     return null;
   }
 
-  final fileBytes = File(excelFilePath).readAsBytesSync();
-  final excel = Excel.decodeBytes(fileBytes);
+  final Excel excel;
+  try {
+    final fileBytes = File(excelFilePath).readAsBytesSync();
+    excel = Excel.decodeBytes(fileBytes);
+  } catch (e) {
+    logError("Cannot read Excel file '$excelFilePath': $e");
+    return null;
+  }
 
   final translations = <String, ExcelTranslations>{};
   final fuzzy = <String, bool>{};
 
   for (final sheet in excel.sheets.values) {
-    final rowHeader = sheet.rows[_rowHeader];
-    for (var translationColIndex = _colTemplateValue; translationColIndex < rowHeader.length; translationColIndex++) {
-      final locale = rowHeader[translationColIndex]?.value?.toString();
-      if (locale == null) {
-        continue;
-      }
-      final items = <String, String>{};
-      for (var rowIndex = _rowHeader + 1; rowIndex < sheet.maxRows; rowIndex++) {
-        final row = sheet.rows[rowIndex];
-        final key = row[_colKey]?.value?.toString();
-        if (key == null) {
+    try {
+      final rowHeader = sheet.rows[_rowHeader];
+      for (var translationColIndex = _colTemplateValue; translationColIndex < rowHeader.length; translationColIndex++) {
+        final locale = rowHeader[translationColIndex]?.value?.toString();
+        if (locale == null) {
           continue;
         }
-        final wasFuzzy = row[_colFuzzy]?.value?.toString().trim() ?? "";
-        if (wasFuzzy.isNotEmpty) {
-          fuzzy[key] = true;
+        final items = <String, String>{};
+        for (var rowIndex = _rowHeader + 1; rowIndex < sheet.maxRows; rowIndex++) {
+          final row = sheet.rows[rowIndex];
+          final key = row[_colKey]?.value?.toString();
+          if (key == null) {
+            continue;
+          }
+          final wasFuzzy = row[_colFuzzy]?.value?.toString().trim() ?? "";
+          if (wasFuzzy.isNotEmpty) {
+            fuzzy[key] = true;
+          }
+          final value = row[translationColIndex]?.value?.toString();
+          if (value == null) {
+            continue;
+          }
+          items[key] = _dequote(value);
         }
-        final value = row[translationColIndex]?.value?.toString();
-        if (value == null) {
-          continue;
-        }
-        items[key] = _dequote(value);
-      }
 
-      if (items.isNotEmpty) {
-        translations[locale] = ExcelTranslations(locale: locale, items: items);
+        if (items.isNotEmpty) {
+          translations[locale] = ExcelTranslations(locale: locale, items: items);
+        }
       }
+    } catch (e) {
+      logError("Cannot process Excel sheet page '${sheet.sheetName}': $e");
     }
   }
   return ExcelFile(translations: translations, fuzzy: fuzzy);
@@ -73,7 +83,7 @@ String? _quote(String? text) => text;
 /// Writes an Excel file.
 void writeExcel({
   required String excelFilePath,
-  required ArbDir arbDir,
+  required Map<String, ArbFile> arbs,
   required ExcelFile? excelFile,
   required String arbTemplateLocale,
 }) {
@@ -82,7 +92,7 @@ void writeExcel({
   final defaultSheet = excel.sheets.isNotEmpty ? excel.sheets.keys.first : null;
 
   final translationsLocales = _getTranslationsLocales(
-    arbDir: arbDir,
+    arbs: arbs,
     excelFile: excelFile,
     arbTemplateLocale: arbTemplateLocale,
   );
@@ -103,7 +113,11 @@ void writeExcel({
   _styleHeaderCells(sheetObject, headerCells);
 
   var rowIdx = _rowHeader + 1;
-  final templateArbFile = arbDir.arbs[arbTemplateLocale]!;
+  final templateArbFile = arbs[arbTemplateLocale];
+  if (templateArbFile == null) {
+    logError("Error generating excel. There are no ARB data for selected template '$arbTemplateLocale'");
+    return;
+  }
   final translationsKeys = _getTranslationsKeys(templateArbFile);
   for (final key in translationsKeys) {
     final row = <CellValue?>[]..length = 4 + translationsLocales.length;
@@ -115,7 +129,7 @@ void writeExcel({
 
     for (var i = 0; i < translationsLocales.length; i++) {
       final locale = translationsLocales[i];
-      final translation = excelFile?.translations[locale]?.items[key] ?? arbDir.arbs[locale]?.items[key];
+      final translation = excelFile?.translations[locale]?.items[key] ?? arbs[locale]?.items[key];
       if (translation == null) {
         continue;
       }
@@ -145,11 +159,11 @@ void writeExcel({
 }
 
 List<String> _getTranslationsLocales({
-  required ArbDir arbDir,
+  required Map<String, ArbFile> arbs,
   required ExcelFile? excelFile,
   required String arbTemplateLocale,
 }) {
-  final translationsLocalesSet = <String>{}..addAll(arbDir.arbs.keys);
+  final translationsLocalesSet = <String>{}..addAll(arbs.keys);
   if (excelFile != null) {
     translationsLocalesSet.addAll(excelFile.translations.keys);
   }
